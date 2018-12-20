@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -9,10 +10,23 @@ import 'home.dart';
 import 'Staff.dart';
 import 'search.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:package_info/package_info.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runZoned<Future<void>>(() async {
+    runApp(MyApp());
+  }, onError: (error, stackTrace) {
+    error.toString();
+    api.reportError(error, stackTrace);
+  });
+
+  // This captures errors reported by the Flutter framework.
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    Zone.current.handleUncaughtError(details.exception, details.stack);
+  };
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -48,6 +62,7 @@ class LaunchPage extends StatelessWidget {
       api.initSp(sp);
 
       if (Platform.isAndroid) {
+        /*
         PermissionHandler()
             .checkPermissionStatus(PermissionGroup.storage)
             .then((PermissionStatus status) {
@@ -63,6 +78,7 @@ class LaunchPage extends StatelessWidget {
             goNext(context);
           }
         });
+        */
       } else {
         checkToken(context);
       }

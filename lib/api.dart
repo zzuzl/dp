@@ -5,15 +5,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'Company.dart';
 import 'Project.dart';
+import 'package:sentry/sentry.dart';
 
 class Api {
   static String token = "";
   static const String TOKEN_KEY = "token";
-  static const String BASE = "https://www.zlihj.cn/";
+  static const String BASE = "http://www.zlihj.cn/";
   static final Dio dio = new Dio();
   static SharedPreferences sp = null;
   static final int COMPANY_SOURCE = 0;
   static final int Project_SOURCE = 1;
+  static final SentryClient _sentry = SentryClient(dsn: "https://b73bc3090e8e45f9bf27fa181a819f9a@sentry.io/1357328");
 
   Api() {
     dio.interceptor.request.onSend = (Options options) {
@@ -30,9 +32,16 @@ class Api {
 
       return response; // continue
     };
-    /*dio.interceptor.response.onError = (DioError e){
-      return  e;//continue
-    };*/
+  }
+
+  Future<void> reportError(dynamic error, dynamic stackTrace) async {
+    // Print the exception to the console
+    print('Caught error: $error, stackTrace: $stackTrace');
+      // Send the Exception and Stacktrace to Sentry in Production mode
+    _sentry.captureException(
+      exception: error,
+      stackTrace: stackTrace,
+    );
   }
 
   void initSp(SharedPreferences s) {
