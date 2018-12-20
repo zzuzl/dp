@@ -1,16 +1,17 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'Company.dart';
 import 'Project.dart';
 import 'package:sentry/sentry.dart';
+import 'dart:convert';
 
 class Api {
   static String token = "";
   static const String TOKEN_KEY = "token";
-  static const String BASE = "http://www.zlihj.cn/";
+  static const String COMPANY_KEY = "company_list";
+  static const String PROJECT_KEY = "project_list";
+  static const String BASE = "https://www.zlihj.cn/";
   static final Dio dio = new Dio();
   static SharedPreferences sp = null;
   static final int COMPANY_SOURCE = 0;
@@ -54,7 +55,6 @@ class Api {
     });*/
     sp = s;
     token = sp.getString(TOKEN_KEY);
-    print('init token:${token}');
   }
 
   Future<Response> login(String email, String password) {
@@ -111,5 +111,55 @@ class Api {
   void storeToken(String _token) {
     token = _token;
     sp.setString(TOKEN_KEY, token);
+  }
+
+  void storeCompany(List<Company> companys) {
+    sp.setString(COMPANY_KEY, jsonEncode(companys));
+  }
+
+  void storeProject(List<Project> projects) {
+    sp.setString(PROJECT_KEY, jsonEncode(projects));
+  }
+
+  List<Company> loadLocalCompany() {
+    List<Company> list = [];
+    try {
+      var company_s = sp.getString(COMPANY_KEY);
+      if (company_s == null) {
+        return list;
+      }
+
+      List maps = jsonDecode(company_s);
+      if (maps != null) {
+        for (Map map in maps) {
+          list.add(new Company(map));
+        }
+      }
+    } catch(e) {
+      print(e);
+    }
+
+    return list;
+  }
+
+  List<Project> loadLocalProject() {
+    List<Project> list = [];
+    try {
+      var project_s = sp.getString(PROJECT_KEY);
+      if (project_s == null) {
+        return list;
+      }
+
+      List maps = jsonDecode(project_s);
+      if (maps != null) {
+        for (dynamic map in maps) {
+          list.add(new Project(map));
+        }
+      }
+    } catch(e) {
+      print(e);
+    }
+
+    return list;
   }
 }

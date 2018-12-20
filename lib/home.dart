@@ -23,13 +23,37 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  bool _c_loaded = false;
+  bool _p_loaded = false;
   List<Company> companyList;
   List<Project> projectList;
 
   @override
   void initState() {
     super.initState();
-    this.getCompany(0);
+
+    this.companyList = api.loadLocalCompany();
+    this.projectList = api.loadLocalProject();
+
+    this.initData();
+  }
+
+  void initData() async {
+    Response response = await api.listCompany(0);
+    List<Company> companys = Company.buildList(response.data['data']);
+    api.storeCompany(companys);
+
+    setState(() {
+      this.companyList = companys;
+    });
+
+    response = await api.listProject(0);
+    List<Project> projects = Project.buildList(response.data['data']);
+    api.storeProject(projects);
+
+    setState(() {
+      this.projectList = projects;
+    });
   }
 
   Widget buildIndex() {
@@ -60,8 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       color: Colors.blue[500],
                     ),
                     onTap: () async {
-                      int id = list[index].getId;
-
                       if (_selectedIndex == 0) {
                         Navigator.push(context, MaterialPageRoute(
                           builder: (context) => SecondCompanyPage(
@@ -114,49 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-
-  void getCompany(int index) async {
-    if (companyList != null && companyList.length > 0) {
-      setState(() {
-        _selectedIndex = index;
-      });
-      return;
-    }
-    Response response = await api.listCompany(0);
-    List<Company> companys = Company.buildList(response.data['data']);
-
-    setState(() {
-      _selectedIndex = index;
-      this.companyList = companys;
-    });
-  }
-
-  void getProject(int index) async {
-    if (projectList != null && projectList.length > 0) {
-      setState(() {
-        _selectedIndex = index;
-      });
-      return;
-    }
-
-    Response response = await api.listProject(0);
-    List<Project> projects = Project.buildList(response.data['data']);
-
-    setState(() {
-      _selectedIndex = index;
-      this.projectList = projects;
-    });
-  }
-
   void _onItemTapped(int index) {
-    if (index == 0) {
-      getCompany(index);
-    } else if (index == 1) {
-      getProject(index);
-    } else {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 }

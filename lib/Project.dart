@@ -14,6 +14,13 @@ class Project {
     this.pid = map['pid'];
   }
 
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'name': name,
+        'pid': pid,
+      };
+
   static List<Project> buildList(List list) {
     List<Project> projects = new List();
     if (list == null) {

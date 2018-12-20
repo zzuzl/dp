@@ -14,6 +14,13 @@ class Company {
     this.pid = map['pid'];
   }
 
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'name': name,
+        'pid': pid,
+      };
+
   static List<Company> buildList(List list) {
     List<Company> companys = new List();
     if (list == null) {
