@@ -46,13 +46,6 @@ class Api {
   }
 
   void initSp(SharedPreferences s) {
-    /*const MethodChannel('plugins.flutter.io/shared_preferences')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
-      if (methodCall.method == 'getAll') {
-        return <String, dynamic>{}; // set initial values here if desired
-      }
-      return null;
-    });*/
     sp = s;
     token = sp.getString(TOKEN_KEY);
   }
@@ -161,5 +154,13 @@ class Api {
     }
 
     return list;
+  }
+
+  Future<Response> uploadAvatar(File file, String fileName) {
+    String finalName = fileName + file.path.substring(file.path.lastIndexOf('.'));
+    FormData formData = new FormData.from({
+      "file": new UploadFileInfo(file, finalName),
+    });
+    return dio.post(BASE + "rest/staff/uploadAvatar", data: formData);
   }
 }

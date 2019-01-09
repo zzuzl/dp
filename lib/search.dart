@@ -37,6 +37,7 @@ class _SearchPageState extends State<SearchPage> {
                 child: new ListTile(
                   leading: new Icon(Icons.search),
                   title: new TextField(
+                    autofocus: true,
                     controller: controller,
                     decoration: new InputDecoration(
                         hintText: '搜索', border: InputBorder.none),

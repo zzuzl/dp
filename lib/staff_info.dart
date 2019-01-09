@@ -78,6 +78,24 @@ class ContactsDemoState extends State<ContactsDemo> {
                 title: Text(staff.name + '(${staff.gender})'),
                 background: Stack(
                   fit: StackFit.expand,
+                  children: staff.avatar == null ? <Widget>[] : <Widget>[
+                    Image.network(
+                      staff.avatar,
+                      fit: BoxFit.cover,
+                      height: _appBarHeight,
+                    ),
+                    // This gradient ensures that the toolbar icons are distinct
+                    // against the background image.
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment(0.0, -1.0),
+                          end: Alignment(0.0, -0.4),
+                          colors: <Color>[Color(0x60000000), Color(0x00000000)],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -185,18 +203,6 @@ class ContactsDemoState extends State<ContactsDemo> {
                           }
                         },
                       ),
-                    ),
-                  ],
-                ),
-                _ContactCategory(
-                  icon: Icons.location_on,
-                  children: <Widget>[
-                    ListTile(
-                      title: Text(getText(staff.workAddress),
-                          style: TextStyle(fontWeight: FontWeight.w300)),
-                      onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.workAddress)));
-                      },
                     ),
                   ],
                 ),

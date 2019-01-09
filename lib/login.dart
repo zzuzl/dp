@@ -17,48 +17,60 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+    List<Widget> list = [ListView(
+      padding: EdgeInsets.symmetric(horizontal: 24.0),
+      children: <Widget>[
+        SizedBox(height: 80.0),
+        Column(
           children: <Widget>[
-            SizedBox(height: 80.0),
-            Column(
-              children: <Widget>[
-                Image.asset('images/diamond.png'),
-                SizedBox(height: 16.0),
-                TextField(
-                    decoration: InputDecoration(
-                      labelText: '邮箱',
-                    ),
-                    controller: _usernameController),
-                SizedBox(height: 12.0),
-                TextField(
-                    decoration: InputDecoration(
-                      labelText: '密码',
-                    ),
-                    obscureText: true,
-                    controller: _passwordController)
-              ],
-            ),
-            SizedBox(height: 120.0),
-            ButtonBar(
-              children: <Widget>[
-                buildButton(),
-              ],
-            )
+            Image.asset('images/diamond.png'),
+            SizedBox(height: 16.0),
+            TextField(
+                decoration: InputDecoration(
+                  labelText: '邮箱',
+                ),
+                controller: _usernameController),
+            SizedBox(height: 12.0),
+            TextField(
+                decoration: InputDecoration(
+                  labelText: '密码',
+                ),
+                obscureText: true,
+                controller: _passwordController)
           ],
         ),
-      ),
-    );
-  }
+        SizedBox(height: 120.0),
+        ButtonBar(
+          children: <Widget>[
+            new RaisedButton(
+              child: new Text("登录"),
+              onPressed: login,
+            ),
+          ],
+        ),
+      ],
+    )];
 
-  Widget buildButton() {
-    return new RaisedButton(
-      child: new Text(
-          buttonEnabled ? "登录" : "登录中"
+    if (!buttonEnabled) {
+      list.add(Opacity(
+          opacity: 0.8,
+          child: ModalBarrier(
+            color: Colors.grey,
+          )));
+      list.add(Center(
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          child: CircularProgressIndicator(),
+        ),
+      ));
+    }
+
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: list
+        )
       ),
-      onPressed: buttonEnabled ? login : null,
     );
   }
 

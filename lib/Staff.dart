@@ -16,6 +16,7 @@ class Staff {
   String _email;
   String _wx;
   String _workAddress;
+  String _avatar;
 
   Staff(Map map) {
     this._id = map['id'];
@@ -33,6 +34,7 @@ class Staff {
     this._email = map['email'];
     this._wx = map['wx'];
     this._workAddress = map['workAddress'];
+    this._avatar = map['avatar'];
   }
 
   static List<Staff> buildList(List list) {
@@ -77,6 +79,12 @@ class Staff {
   String get workAddress => _workAddress;
 
   String get pname => _pname;
+
+  String get avatar => _avatar;
+
+  set avatar(String value) {
+    _avatar = value;
+  }
 
   void setPname(String value) {
     _pname = value;

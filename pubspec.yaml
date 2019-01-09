@@ -27,6 +27,7 @@ dependencies:
   # permission_handler: 2.1.1
   package_info: 0.3.2
   sentry: 2.1.1
+  image_picker: ^0.4.10
 
 dev_dependencies:
   flutter_test:
