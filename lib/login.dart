@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> list = [ListView(
+    Widget listView = ListView(
       padding: EdgeInsets.symmetric(horizontal: 24.0),
       children: <Widget>[
         SizedBox(height: 80.0),
@@ -49,28 +49,21 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ],
-    )];
-
-    if (!buttonEnabled) {
-      list.add(Opacity(
-          opacity: 0.8,
-          child: ModalBarrier(
-            color: Colors.grey,
-          )));
-      list.add(Center(
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: CircularProgressIndicator(),
-        ),
-      ));
-    }
+    );
 
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          children: list
+        child: buttonEnabled ? listView: Stack(
+            alignment: FractionalOffset.center,
+          children: [listView,
+          Opacity(
+              opacity: 0.8,
+              child: ModalBarrier(
+                color: Color(0xFFEEEEEE),
+              )),
+          CircularProgressIndicator()]
         )
-      ),
+      )
     );
   }
 

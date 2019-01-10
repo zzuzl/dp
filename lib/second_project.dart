@@ -46,13 +46,10 @@ class _SecondProjectPageState extends State<SecondProjectPage> {
   }
 
   void initData() async {
-    Response response = await api.listCompany(widget.project.id);
+    _page = 1;
     Response staffResponse = await api.listStaff(widget.project.id, _page, SOURCE);
 
     setState(() {
-      if (response.data['success']) {
-        widget.projectList = Project.buildList(response.data['data']);
-      }
       if (staffResponse.data['success']) {
         staffList = Staff.buildList(staffResponse.data['data']);
       }
@@ -96,23 +93,26 @@ class _SecondProjectPageState extends State<SecondProjectPage> {
         ),
         body: _request ? Center(
           child: CircularProgressIndicator(),
-        ) : ListView.builder(
-          itemCount: staffList.length,
-          itemBuilder: (context, index) {
-            if (index == staffList.length) {
-              return _buildProgressIndicator();
-            } else {
-              return ListTile(
-                  leading: new CircleAvatar(child: new Text(String.fromCharCode(staffList[index].name.codeUnitAt(0)))),
-                  title: new Text(staffList[index].name),
-                  subtitle: new Text(staffList[index].workType),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ContactsDemo(staffList[index])));
-                  });
-            }
-          },
-          controller: _scrollController,
+        ) : RefreshIndicator(
+          child: ListView.builder(
+            itemCount: staffList.length,
+            itemBuilder: (context, index) {
+              if (index == staffList.length) {
+                return _buildProgressIndicator();
+              } else {
+                return ListTile(
+                    leading: new CircleAvatar(child: new Text(String.fromCharCode(staffList[index].name.codeUnitAt(0)))),
+                    title: new Text(staffList[index].name),
+                    subtitle: new Text(staffList[index].workType),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ContactsDemo(staffList[index])));
+                    });
+              }
+            },
+            controller: _scrollController,
+          ),
+          onRefresh: _handleRefresh,
         )
     );
   }
@@ -127,5 +127,12 @@ class _SecondProjectPageState extends State<SecondProjectPage> {
         ),
       ),
     );
+  }
+
+  Future<Null> _handleRefresh() async {
+    await new Future.delayed(new Duration(seconds: 1));
+    initData();
+
+    return null;
   }
 }

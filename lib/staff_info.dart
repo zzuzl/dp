@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'Staff.dart';
 import 'MyIcon.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class _ContactCategory extends StatelessWidget {
   const _ContactCategory({Key key, this.icon, this.children}) : super(key: key);
@@ -50,7 +51,7 @@ class ContactsDemo extends StatefulWidget {
 class ContactsDemoState extends State<ContactsDemo> {
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
-  final double _appBarHeight = 256.0;
+  final double _appBarHeight = 300.0;
   final Staff staff;
 
   ContactsDemoState(this.staff);
@@ -79,8 +80,8 @@ class ContactsDemoState extends State<ContactsDemo> {
                 background: Stack(
                   fit: StackFit.expand,
                   children: staff.avatar == null ? <Widget>[] : <Widget>[
-                    Image.network(
-                      staff.avatar,
+                    new Image(
+                      image: new CachedNetworkImageProvider(staff.avatar),
                       fit: BoxFit.cover,
                       height: _appBarHeight,
                     ),

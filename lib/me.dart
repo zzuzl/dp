@@ -8,6 +8,7 @@ import 'helper.dart';
 import 'login.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MePage extends StatefulWidget {
   final Staff _staff;
@@ -29,8 +30,6 @@ class _MePageState extends State<MePage> {
     _imageFile = ImagePicker.pickImage(source: source);
 
     _imageFile.then((File file) {
-      print("文件：${file}");
-
       setState(() {
         _loading = true;
       });
@@ -67,11 +66,26 @@ class _MePageState extends State<MePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> list = [ListView(
+    Widget listView = ListView(
       children: <Widget>[
+        Align(
+          alignment: Alignment.center,
+          child: Container(
+            margin: EdgeInsets.all(20.0),
+            width: 150.0,
+            height: 150.0,
+            decoration: new BoxDecoration(
+              image: new DecorationImage(
+                image: new CachedNetworkImageProvider(_staff.avatar),
+                fit: BoxFit.cover,
+              ),
+              borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+            ),
+          ),
+        ),
         ListTile(
-          title: Text(_staff.name,
-              style: TextStyle(fontWeight: FontWeight.w500)),
+          title:
+              Text(_staff.name, style: TextStyle(fontWeight: FontWeight.w500)),
           subtitle: Text(_staff.workType),
           leading: Icon(
             Icons.contacts,
@@ -167,31 +181,29 @@ class _MePageState extends State<MePage> {
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => LoginPage()),
-                  (Route<dynamic> route) { return false; },
+              (Route<dynamic> route) {
+                return false;
+              },
             );
           },
         ),
       ],
-    )];
-
-    if (_loading) {
-      list.add(Opacity(
-          opacity: 0.8,
-          child: ModalBarrier(
-            color: Colors.grey,
-          )));
-      list.add(Center(
-        child: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: CircularProgressIndicator(),
-        ),
-      ));
-    }
+    );
 
     return Scaffold(
-      body: Stack(
-        children: list,
-      )
-    );
+        body: _loading
+            ? Stack(
+                alignment: FractionalOffset.center,
+                children: [
+                  listView,
+                  Opacity(
+                      opacity: 0.8,
+                      child: ModalBarrier(
+                        color: Color(0xFFEEEEEE),
+                      )),
+                  CircularProgressIndicator()
+                ],
+              )
+            : listView);
   }
 }

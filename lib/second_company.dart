@@ -43,13 +43,10 @@ class _SecondCompanyPageState extends State<SecondCompanyPage> {
   }
 
   void initData() async {
-    Response response = await api.listCompany(widget.company.id);
+    _page = 1;
     Response staffResponse = await api.listStaff(widget.company.id, _page, SOURCE);
 
     setState(() {
-      if (response.data['success']) {
-        widget.companyList = Company.buildList(response.data['data']);
-      }
       if (staffResponse.data['success']) {
         this.staffList = Staff.buildList(staffResponse.data['data']);
       }
@@ -93,25 +90,35 @@ class _SecondCompanyPageState extends State<SecondCompanyPage> {
         ),
         body: _request ? Center(
           child: CircularProgressIndicator(),
-        ) : ListView.builder(
-          itemCount: this.staffList.length,
-          itemBuilder: (context, index) {
-            if (index == this.staffList.length) {
-              return _buildProgressIndicator();
-            } else {
-              return ListTile(
-                  leading: new CircleAvatar(child: new Text(String.fromCharCode(this.staffList[index].name.codeUnitAt(0)))),
-                  title: new Text(this.staffList[index].name),
-                  subtitle: new Text(this.staffList[index].workType),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ContactsDemo(this.staffList[index])));
-                  });
-            }
-          },
-          controller: _scrollController,
+        ) : RefreshIndicator(
+            child: ListView.builder(
+              itemCount: this.staffList.length,
+              itemBuilder: (context, index) {
+                if (index == this.staffList.length) {
+                  return _buildProgressIndicator();
+                } else {
+                  return ListTile(
+                      leading: new CircleAvatar(child: new Text(String.fromCharCode(this.staffList[index].name.codeUnitAt(0)))),
+                      title: new Text(this.staffList[index].name),
+                      subtitle: new Text(this.staffList[index].workType),
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => ContactsDemo(this.staffList[index])));
+                      });
+                }
+              },
+              controller: _scrollController,
+            ),
+            onRefresh: _handleRefresh
         )
     );
+  }
+
+  Future<Null> _handleRefresh() async {
+    await new Future.delayed(new Duration(seconds: 1));
+    initData();
+
+    return null;
   }
 
   Widget _buildProgressIndicator() {
