@@ -10,23 +10,25 @@ import 'second_company.dart';
 import 'second_project.dart';
 import 'me.dart';
 import 'search.dart';
+import 'package:event_bus/event_bus.dart';
 
 class MyHomePage extends StatefulWidget {
   final Staff staff;
   MyHomePage({Key key, @required this.staff}) : super(key: key);
 
-  Staff getMe() => staff;
-
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState(staff);
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final Staff _staff;
+  final EventBus _eventBus = new EventBus();
   int _selectedIndex = 0;
-  bool _c_loaded = false;
-  bool _p_loaded = false;
   List<Company> companyList;
   List<Project> projectList;
+  int last = 0;
+
+  _MyHomePageState(this._staff);
 
   @override
   void initState() {
@@ -36,6 +38,10 @@ class _MyHomePageState extends State<MyHomePage> {
     this.projectList = api.loadLocalProject();
 
     this.initData();
+
+    _eventBus.on<AvatarUpdateEvent>().listen((event) {
+      _staff.avatar = event.avatar;
+    });
   }
 
   void initData() async {
@@ -62,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (_selectedIndex == 1) {
       return _buildIndex(projectList);
     } else {
-      return MePage(widget.getMe());
+      return MePage(_staff, _eventBus);
     }
   }
 
@@ -108,30 +114,41 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('中原分公司数字人事'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
-            },
-          ),
-        ],
-      ),
-      body: buildIndex(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('总部')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.business), title: Text('项目簇')),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), title: Text('我的')),
-        ],
-        currentIndex: _selectedIndex,
-        fixedColor: Colors.deepPurple,
-        onTap: _onItemTapped,
+    return WillPopScope(
+      onWillPop: (){
+        int now = DateTime.now().millisecond;
+        if (now - last > 800) {
+          last = DateTime.now().millisecond;
+          return Future.value(false);
+        } else {
+          return Future.value(true);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('中原分公司数字人事'),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
+              },
+            ),
+          ],
+        ),
+        body: buildIndex(),
+        bottomNavigationBar: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('总部')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.business), title: Text('项目簇')),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle), title: Text('我的')),
+          ],
+          currentIndex: _selectedIndex,
+          fixedColor: Colors.deepPurple,
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }

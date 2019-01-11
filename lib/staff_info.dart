@@ -60,6 +60,14 @@ class ContactsDemoState extends State<ContactsDemo> {
     return s == null ? '' : s;
   }
 
+  void _copyData(BuildContext context, String text) {
+    if (text == null || text.length < 1) {
+      return;
+    }
+    Clipboard.setData(new ClipboardData(text: text));
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text('已复制到剪切板')));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -70,7 +78,7 @@ class ContactsDemoState extends State<ContactsDemo> {
       ),
       child: Scaffold(
         key: _scaffoldKey,
-        body: CustomScrollView(
+        body: Builder(builder: (context) => CustomScrollView(
           slivers: <Widget>[
             SliverAppBar(
               expandedHeight: _appBarHeight,
@@ -109,7 +117,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.pname),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.pname)));
+                        _copyData(context, staff.pname);
                       },
                     ),
                   ],
@@ -121,7 +129,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.workType),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.workType)));
+                        _copyData(context, staff.workType);
                       },
                     ),
                   ],
@@ -133,7 +141,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.birthday),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.birthday)));
+                        _copyData(context, staff.birthday);
                       },
                     ),
                   ],
@@ -145,7 +153,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.email),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.email)));
+                        _copyData(context, staff.email);
                       },
                     ),
                   ],
@@ -157,7 +165,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.qq),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.qq)));
+                        _copyData(context, staff.qq);
                       },
                     ),
                   ],
@@ -169,7 +177,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.wx),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.wx)));
+                        _copyData(context, staff.wx);
                       },
                     ),
                   ],
@@ -181,7 +189,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.gxtAccount),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.gxtAccount)));
+                        _copyData(context, staff.gxtAccount);
                       },
                     ),
                   ],
@@ -193,7 +201,7 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.phone),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.phone)));
+                        _copyData(context, staff.phone);
                       },
                       trailing: IconButton(
                         icon: const Icon(Icons.call),
@@ -214,14 +222,14 @@ class ContactsDemoState extends State<ContactsDemo> {
                       title: Text(getText(staff.school),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.school)));
+                        _copyData(context, staff.school);
                       },
                     ),
                     ListTile(
                       title: Text(getText(staff.major),
                           style: TextStyle(fontWeight: FontWeight.w300)),
                       onLongPress: () {
-                        Clipboard.setData(new ClipboardData(text: getText(staff.major)));
+                        _copyData(context, staff.major);
                       },
                     ),
                   ],
@@ -229,7 +237,7 @@ class ContactsDemoState extends State<ContactsDemo> {
               ]),
             ),
           ],
-        ),
+        ),)
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'Staff.dart';
 import 'staff_info.dart';
 import 'package:dio/dio.dart';
 import 'helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class SecondCompanyPage extends StatefulWidget {
   final Company company;
@@ -98,7 +99,13 @@ class _SecondCompanyPageState extends State<SecondCompanyPage> {
                   return _buildProgressIndicator();
                 } else {
                   return ListTile(
-                      leading: new CircleAvatar(child: new Text(String.fromCharCode(this.staffList[index].name.codeUnitAt(0)))),
+                      leading: new CircleAvatar(
+                          child: this.staffList[index].avatar == null ?
+                          new Text(String.fromCharCode(this.staffList[index].name.codeUnitAt(0))) :
+                          new CachedNetworkImage(
+                            imageUrl: this.staffList[index].avatar,
+                          )
+                      ),
                       title: new Text(this.staffList[index].name),
                       subtitle: new Text(this.staffList[index].workType),
                       onTap: () {

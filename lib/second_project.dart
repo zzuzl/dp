@@ -4,6 +4,7 @@ import 'Staff.dart';
 import 'staff_info.dart';
 import 'package:dio/dio.dart';
 import 'helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class SecondProjectPage extends StatefulWidget {
   final Project project;
@@ -101,7 +102,13 @@ class _SecondProjectPageState extends State<SecondProjectPage> {
                 return _buildProgressIndicator();
               } else {
                 return ListTile(
-                    leading: new CircleAvatar(child: new Text(String.fromCharCode(staffList[index].name.codeUnitAt(0)))),
+                    leading: new CircleAvatar(
+                        child: this.staffList[index].avatar == null ?
+                        new Text(String.fromCharCode(this.staffList[index].name.codeUnitAt(0))) :
+                        new CachedNetworkImage(
+                          imageUrl: this.staffList[index].avatar,
+                        )
+                    ),
                     title: new Text(staffList[index].name),
                     subtitle: new Text(staffList[index].workType),
                     onTap: () {

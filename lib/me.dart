@@ -9,27 +9,40 @@ import 'login.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:event_bus/event_bus.dart';
+import 'package:package_info/package_info.dart';
 
 class MePage extends StatefulWidget {
   final Staff _staff;
+  final EventBus _eventBus;
 
-  MePage(this._staff);
+  MePage(this._staff, this._eventBus);
 
   @override
-  _MePageState createState() => _MePageState(_staff);
+  _MePageState createState() => _MePageState(_staff, _eventBus);
 }
 
 class _MePageState extends State<MePage> {
   final Staff _staff;
+  final EventBus _eventBus;
   bool _loading = false;
   Future<File> _imageFile;
+  String _version;
 
-  _MePageState(this._staff);
+  _MePageState(this._staff, this._eventBus);
 
-  void _onImageButtonPressed(ImageSource source) {
+  void _onImageButtonPressed(BuildContext context, ImageSource source) {
     _imageFile = ImagePicker.pickImage(source: source);
 
     _imageFile.then((File file) {
+      if (file == null) {
+        return;
+      }
+      if (file.lengthSync() >= 5120000) {
+        Scaffold.of(context).showSnackBar(SnackBar(content: Text('图片超过5M')));
+        return;
+      }
+
       setState(() {
         _loading = true;
       });
@@ -38,6 +51,7 @@ class _MePageState extends State<MePage> {
         if (response.data['success']) {
           String avatar = response.data['msg'];
           _staff.avatar = avatar;
+          _eventBus.fire(new AvatarUpdateEvent(avatar));
         } else {
           showDialog<void>(
             context: context,
@@ -64,8 +78,22 @@ class _MePageState extends State<MePage> {
     });
   }
 
+  void _copyData(BuildContext context, String text) {
+    if (text == null || text.length < 1) {
+      return;
+    }
+    Clipboard.setData(new ClipboardData(text: text));
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text('已复制到剪切板')));
+  }
+
   @override
   Widget build(BuildContext context) {
+    PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
+      setState(() {
+        _version = " [${packageInfo.version}]";
+      });
+    });
+
     Widget listView = ListView(
       children: <Widget>[
         Align(
@@ -92,7 +120,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.name));
+            _copyData(context, _staff.name);
           },
         ),
         Divider(),
@@ -103,7 +131,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.pname));
+            _copyData(context, _staff.pname);
           },
         ),
         ListTile(
@@ -113,7 +141,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.phone));
+            _copyData(context, _staff.phone);
           },
         ),
         ListTile(
@@ -123,7 +151,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.email));
+            _copyData(context, _staff.email);
           },
         ),
         ListTile(
@@ -133,7 +161,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.qq));
+            _copyData(context, _staff.qq);
           },
         ),
         ListTile(
@@ -143,7 +171,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.wx));
+            _copyData(context, _staff.wx);
           },
         ),
         ListTile(
@@ -153,7 +181,7 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.gxtAccount));
+            _copyData(context, _staff.gxtAccount);
           },
         ),
         ListTile(
@@ -163,18 +191,18 @@ class _MePageState extends State<MePage> {
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            Clipboard.setData(new ClipboardData(text: _staff.birthday));
+            _copyData(context, _staff.birthday);
           },
         ),
         RaisedButton(
           child: new Text("修改头像"),
           color: Colors.white70,
           onPressed: () {
-            _onImageButtonPressed(ImageSource.gallery);
+            _onImageButtonPressed(context, ImageSource.gallery);
           },
         ),
         RaisedButton(
-          child: new Text("退 出"),
+          child: new Text("退 出${_version}"),
           color: Colors.redAccent,
           onPressed: () {
             api.logout();
@@ -191,19 +219,26 @@ class _MePageState extends State<MePage> {
     );
 
     return Scaffold(
-        body: _loading
+        body: Builder(builder: (context) => _loading
             ? Stack(
-                alignment: FractionalOffset.center,
-                children: [
-                  listView,
-                  Opacity(
-                      opacity: 0.8,
-                      child: ModalBarrier(
-                        color: Color(0xFFEEEEEE),
-                      )),
-                  CircularProgressIndicator()
-                ],
-              )
-            : listView);
+          alignment: FractionalOffset.center,
+          children: [
+            listView,
+            Opacity(
+                opacity: 0.8,
+                child: ModalBarrier(
+                  color: Color(0xFFEEEEEE),
+                )),
+            CircularProgressIndicator()
+          ],
+        ) : listView));
   }
+}
+
+class AvatarUpdateEvent {
+  String _avatar;
+
+  AvatarUpdateEvent(this._avatar);
+
+  String get avatar => _avatar;
 }
