@@ -14,21 +14,20 @@ import 'package:event_bus/event_bus.dart';
 
 class MyHomePage extends StatefulWidget {
   final Staff staff;
+  final EventBus eventBus = new EventBus();
   MyHomePage({Key key, @required this.staff}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState(staff);
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final Staff _staff;
-  final EventBus _eventBus = new EventBus();
   int _selectedIndex = 0;
   List<Company> companyList;
   List<Project> projectList;
   int last = 0;
 
-  _MyHomePageState(this._staff);
+  _MyHomePageState();
 
   @override
   void initState() {
@@ -39,8 +38,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     this.initData();
 
-    _eventBus.on<AvatarUpdateEvent>().listen((event) {
-      _staff.avatar = event.avatar;
+    widget.eventBus.on<AvatarUpdateEvent>().listen((event) {
+      widget.staff.avatar = event.avatar;
     });
   }
 
@@ -68,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (_selectedIndex == 1) {
       return _buildIndex(projectList);
     } else {
-      return MePage(_staff, _eventBus);
+      return MePage(widget.staff, widget.eventBus);
     }
   }
 

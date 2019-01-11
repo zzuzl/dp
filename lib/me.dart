@@ -19,17 +19,15 @@ class MePage extends StatefulWidget {
   MePage(this._staff, this._eventBus);
 
   @override
-  _MePageState createState() => _MePageState(_staff, _eventBus);
+  _MePageState createState() => _MePageState();
 }
 
 class _MePageState extends State<MePage> {
-  final Staff _staff;
-  final EventBus _eventBus;
   bool _loading = false;
   Future<File> _imageFile;
   String _version;
 
-  _MePageState(this._staff, this._eventBus);
+  _MePageState();
 
   void _onImageButtonPressed(BuildContext context, ImageSource source) {
     _imageFile = ImagePicker.pickImage(source: source);
@@ -47,11 +45,11 @@ class _MePageState extends State<MePage> {
         _loading = true;
       });
 
-      api.uploadAvatar(file, _staff.email).then((Response response) {
+      api.uploadAvatar(file, widget._staff.email).then((Response response) {
         if (response.data['success']) {
           String avatar = response.data['msg'];
-          _staff.avatar = avatar;
-          _eventBus.fire(new AvatarUpdateEvent(avatar));
+          widget._staff.avatar = avatar;
+          widget._eventBus.fire(new AvatarUpdateEvent(avatar));
         } else {
           showDialog<void>(
             context: context,
@@ -104,7 +102,7 @@ class _MePageState extends State<MePage> {
             height: 150.0,
             decoration: new BoxDecoration(
               image: new DecorationImage(
-                image: new CachedNetworkImageProvider(_staff.avatar),
+                image: new CachedNetworkImageProvider(widget._staff.avatar),
                 fit: BoxFit.cover,
               ),
               borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
@@ -113,85 +111,85 @@ class _MePageState extends State<MePage> {
         ),
         ListTile(
           title:
-              Text(_staff.name, style: TextStyle(fontWeight: FontWeight.w500)),
-          subtitle: Text(_staff.workType),
+              Text(widget._staff.name, style: TextStyle(fontWeight: FontWeight.w500)),
+          subtitle: Text(widget._staff.workType),
           leading: Icon(
             Icons.contacts,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.name);
+            _copyData(context, widget._staff.name);
           },
         ),
         Divider(),
         ListTile(
-          title: Text(_staff.pname),
+          title: Text(widget._staff.pname),
           leading: Icon(
             Icons.domain,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.pname);
+            _copyData(context, widget._staff.pname);
           },
         ),
         ListTile(
-          title: Text(_staff.phone),
+          title: Text(widget._staff.phone),
           leading: Icon(
             Icons.call,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.phone);
+            _copyData(context, widget._staff.phone);
           },
         ),
         ListTile(
-          title: Text(_staff.email),
+          title: Text(widget._staff.email),
           leading: Icon(
             Icons.email,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.email);
+            _copyData(context, widget._staff.email);
           },
         ),
         ListTile(
-          title: Text(_staff.qq),
+          title: Text(widget._staff.qq),
           leading: Icon(
             MyIcon.qq,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.qq);
+            _copyData(context, widget._staff.qq);
           },
         ),
         ListTile(
-          title: Text(_staff.wx),
+          title: Text(widget._staff.wx),
           leading: Icon(
             MyIcon.wx,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.wx);
+            _copyData(context, widget._staff.wx);
           },
         ),
         ListTile(
-          title: Text(_staff.gxtAccount),
+          title: Text(widget._staff.gxtAccount),
           leading: Icon(
             MyIcon.gxt,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.gxtAccount);
+            _copyData(context, widget._staff.gxtAccount);
           },
         ),
         ListTile(
-          title: Text(_staff.birthday),
+          title: Text(widget._staff.birthday),
           leading: Icon(
             Icons.cake,
             color: Colors.blue[500],
           ),
           onLongPress: () {
-            _copyData(context, _staff.birthday);
+            _copyData(context, widget._staff.birthday);
           },
         ),
         RaisedButton(
